@@ -11,3 +11,8 @@
 - [Data Visualization](#data-visualization)
 - [Conclusion](#conclusion)
 - [Recommendation](#recommendation)
+
+
+  ----
+  ##introduction
+  This project was designed to identify booking patterns, guest demographics, and operational efficiencies. The aim is to help stakeholders make data-driven decisions that will boost their profit margin.
