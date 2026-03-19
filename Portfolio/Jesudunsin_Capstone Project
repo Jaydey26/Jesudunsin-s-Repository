@@ -1,4 +1,4 @@
-# Hotel Performance Analysis (2018-2020)
+# Remote Work Mental Health Analysis 
 ---
 # Table of Contents
 ---
@@ -16,4 +16,11 @@
   ---
   ## Introduction
   ---
-This project was designed to identify booking patterns, guest demographics, and operational efficiencies. The aim is to help stakeholders make data-driven decisions that will boost their profit margin.
+This project was designed to provide a clear understanding of employee demographics, work arrangements, and mental health patterns. Identify key factors influencing stress levels, job satisfaction, and social isolation. Offer strategic recommendations for organisations to improve remote work policies based on data-driven insights.
+
+---
+ ## Problem Statement
+A  global HR consultancy firm  has observed rising concerns about stress levels, social isolation, and job satisfaction among remote workers. However, they lack clear insights into the key factors driving these challenges and their impact across different job roles, industries, and demographic groups. To address this, they provided a dataset containing information on 5,000 employees worldwide, capturing various aspects of their work environment and mental health
+
+---
+ ## Data Sourcing
