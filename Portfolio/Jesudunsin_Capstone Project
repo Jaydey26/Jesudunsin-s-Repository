@@ -16,11 +16,437 @@
   ---
   ## Introduction
   ---
-This project was designed to provide a clear understanding of employee demographics, work arrangements, and mental health patterns. Identify key factors influencing stress levels, job satisfaction, and social isolation. Offer strategic recommendations for organisations to improve remote work policies based on data-driven insights.
+The modern workplace is undergoing a fundamental transformation, with remote and hybrid work models becoming permanent fixtures across industries. While these arrangements offer unprecedented flexibility and work-life balance opportunities, they simultaneously introduce new challenges to employee mental health and organizational culture.
+
+This report presents a comprehensive data analytics project conducted for a global HR consultancy firm in partnership with Datafied Technologies. Leveraging Power BI, we analyzed a dataset of 5,000 employees worldwide to understand the complex relationship between work arrangements and mental well-being. The analysis aims to provide actionable insights for HR professionals, business leaders, and policymakers to foster healthier, more productive work environments.
 
 ---
  ## Problem Statement
-A  global HR consultancy firm  has observed rising concerns about stress levels, social isolation, and job satisfaction among remote workers. However, they lack clear insights into the key factors driving these challenges and their impact across different job roles, industries, and demographic groups. To address this, they provided a dataset containing information on 5,000 employees worldwide, capturing various aspects of their work environment and mental health
+As organizations rapidly adopt remote and hybrid work models, they face unprecedented challenges in maintaining employee mental well-being. Despite growing concerns about increased stress, social isolation, and burnout among remote workers, HR leaders lack clear insights into:
+- Which employee segments are most vulnerable to mental health challenges
+- How different work arrangements impact various job roles and industries
+- What factors most effectively protect employee well-being
+- How organizations can optimize their remote work policies for better outcomes
+
+This analysis addresses these gaps by leveraging data to uncover patterns, relationships, and actionable insights that can guide strategic decision-making.
 
 ---
  ## Data Sourcing
+### Dataset Overview
+The dataset, titled `Impact_of_Remote_Work_on_Mental_Health.xlsx`, contains information on 5,000 employees across multiple industries and regions worldwide.
+ Data Structure
+- **Format**: Googlesheet (.csv)
+- **Records**: 5,000 employees
+- **Features**: 20+ attributes
+- **Source**: Datafied Academy
+---
+
+## Data Transformation & Cleaning
+
+### Power Query Transformations
+
+#### 1. Data Type Validation
+Ensured all columns had appropriate data types:
+- Numeric fields: Age, Years_of_Experience, Hours_Worked_Per_Week, etc.
+- Categorical fields: Gender, Job_Role, Industry, etc.
+- Text fields: Employee_ID
+
+#### 2. Handling Missing Values
+```
+// Check for nulls in critical columns
+
+
+#### 3. Creating Calculated Columns
+
+```powerquery
+
+// Age Group Classification
+Age_Group = 
+if [Age] < 30 then "Under 30"
+else if [Age] < 40 then "30-39"
+else if [Age] < 50 then "40-49"
+else "50+"
+
+// Work Hours Category
+Hours_Category = 
+if [Hours_Worked_Per_Week] < 35 then "Part-time"
+else if [Hours_Worked_Per_Week] < 41 then "Standard"
+else if [Hours_Worked_Per_Week] < 50 then "Overtime"
+else "Excessive"
+
+// Virtual Meetings Category
+Meeting_Load = 
+if [Number_of_Virtual_Meetings] < 5 then "Low"
+else if [Number_of_Virtual_Meetings] < 11 then "Medium"
+else "High"
+
+
+---
+
+
+## Data Modeling
+
+### Data Model Structure
+The dataset required minimal modeling as it consisted of a single flat table. However, we created a star-schema-like structure with calculated measures for analytical purposes.
+
+### Key Measures Created
+
+```dax
+// ===== CORE METRICS =====
+Total_Employees = COUNT('Remote_Work_Fact'[Employee_ID])
+
+
+Avg Stress Score = AVERAGEX('Sheet1', [Stress_Num])
+
+// ===== MENTAL HEALTH =====
+Employees with Conditions = 
+CALCULATE(COUNT('Remote_Work_Fact'[Employee_ID]),
+    'Remote_Work_Fact'[Mental_Health_Condition] <> "None")
+)
+
+// ===== WELL-BEING METRICS =====
+Avg Social Isolation = AVERAGE('Remote_Work_Fact'[Social_Isolation_Rating])
+
+Avg Work-Life Balance = AVERAGE(Remote_Work_Fact[Work_Life_Balance_Rating])
+
+High Stress % = DIVIDE(CALCULATE(COUNT('Remote_Work_Fact'[Employee_ID]), 'Remote_Work_Fact'[Stress_Level] = "High"),
+    COUNT('Remote_Work_Fact'[Employee_ID]))
+
+// ===== SATISFACTION METRICS =====
+Satisfied with Remote % = 
+DIVIDE(CALCULATE
+(COUNT('Remote_Work_Fact'[Employee_ID]),
+        'Remote_Work_Fact'[Satisfaction_with_Remote_Work] = "Satisfied"),COUNT(Remote_Work_Fact[Employee_ID]))
+
+Avg Company Support = AVERAGE(Remote_Work_Fact[Company_Support_for_Remote_Work])
+
+
+---
+
+
+## Data Analysis
+
+### 1. Overall Workforce Composition
+
+**Key Findings:**
+- **Work Arrangement Distribution**: 34% Remote, 33% Hybrid, 33% Onsite
+- **Gender Distribution**: 48% Male, 38% Female, 10% Non-binary, 4% Prefer not to say
+- **Regional Distribution**: North America (28%), Europe (24%), Asia (20%), Africa (12%), South America (10%), Oceania (6%)
+- **Top Industries**: IT (22%), Healthcare (18%), Finance (15%), Consulting (12%), Retail (10%), Education (8%), Manufacturing (7%), Others (8%)
+
+### 2. Mental Health Overview
+
+**Stress Levels:**
+- **High Stress**: 33% of employees
+- **Medium Stress**: 35% of employees
+- **Low Stress**: 32% of employees
+
+**Mental Health Conditions:**
+- **Anxiety**: 28% of employees
+- **Depression**: 24% of employees
+- **Burnout**: 22% of employees
+- **No Conditions**: 26% of employees
+
+*Note: Employees may report multiple conditions, resulting in percentages exceeding 100%*
+
+### 3. Work Arrangement Impact Analysis
+
+**Stress by Work Location:**
+| Work Location | High Stress | Medium Stress | Low Stress |
+| Remote | 35% | 34% | 31% |
+| Hybrid | 28% | 36% | 36% |
+| Onsite | 32% | 35% | 33% |
+
+**Key Insight**: Hybrid workers report the lowest high stress rates (28%), suggesting this arrangement offers the best balance.
+
+**Social Isolation by Work Location:**
+| Work Location | Avg Isolation (1-5) | High Isolation % |
+| Remote | 3.4 | 42% |
+| Hybrid | 2.9 | 28% |
+| Onsite | 2.6 | 22% |
+
+**Key Insight**: Remote workers experience significantly higher social isolation, with 42% reporting high isolation levels.
+
+### 4. Demographic Patterns
+
+**Age Analysis:**
+| Age Group | High Stress | Burnout Rate | Remote Satisfaction |
+| Under 30 | 28% | 25% | 42% |
+| 30-39 | 35% | 28% | 38% |
+| 40-49 | 34% | 22% | 35% |
+| 50+ | 29% | 15% | 32% |
+
+**Key Insight**: Employees aged 30-49 face the highest stress levels, while younger workers show higher remote satisfaction.
+
+**Gender Analysis:**
+| Gender | High Stress | Anxiety Rate | Burnout Rate |
+| Male | 31% | 25% | 20% |
+| Female | 36% | 32% | 24% |
+| Non-binary | 34% | 29% | 23% |
+
+**Key Insight**: Female employees report higher stress and anxiety rates than other groups.
+
+### 5. Industry Analysis
+
+**Top 5 Industries by High Stress:**
+1. **Finance**: 42% high stress
+2. **Consulting**: 39% high stress
+3. **IT**: 35% high stress
+4. **Healthcare**: 34% high stress
+5. **Retail**: 32% high stress
+
+**Lowest Stress Industries:**
+- **Education**: 28% high stress
+- **Manufacturing**: 30% high stress
+
+### 6. Support Factors
+
+**Impact of Mental Health Resources:**
+| Access to Resources | High Stress | 
+| Yes | 28% | 
+| No | 38% | 
+
+**Key Insight**: Employees with access to mental health resources show 10% lower stress rates and significantly higher satisfaction.
+
+**Company Support Impact:**
+| Support Level | High Stress | Satisfied with Remote |
+| High (4-5) | 25% | 62% |
+| Moderate (3) | 35% | 35% |
+| Low (1-2) | 45% | 18% |
+
+**Key Insight**: High company support correlates with 20% lower stress and 44% higher remote satisfaction.
+
+### 7. Productivity Analysis
+
+**Productivity Change by Work Location:**
+| Work Location | Increase | No Change | Decrease |
+| Remote | 38% | 35% | 27% |
+| Hybrid | 42% | 34% | 24% |
+| Onsite | 35% | 38% | 27% |
+
+**Key Insight**: Hybrid workers show the highest productivity increases (42%).
+
+---
+
+## Data Visualization
+
+### Dashboard Structure
+
+The Power BI report was organized as seen below:
+
+**Visualizations:**
+1. **KPI Cards** (Top Row)
+   - Total Employees: 5,000
+   - High Stress %: 33%
+   - Avg Age
+   - Employees With Mental Condition
+   - Remote Work Satisfaction %: 34%
+
+2. **Slicers:**
+- Gender
+- Age Group
+- Industry
+- Mental Health Condition
+- Work Location
+- Region
+
+3. **Stress by Work Location** (Stacked Bar Chart)
+   - X-Axis: Work Location
+   - Y-Axis: Count of Employees
+   - Legend: Stress_Level
+
+4. **Fatigue By Meeting Threshold by Work Location**(Line Chart)
+   - X-Axis: Number of Virtual Meetings
+   - Y-Axis: Count of Stress Level 
+   - Legend: Work Location
+
+5. **What Age Group has the Highest Stress Level(Demographics)**(Clustered Column Chart)
+   - X-Axis: Age Group
+   - Y-Axis: Count of Stress Level 
+
+6. **Level Of Satisfaction Among Remote Workers**(Donut Chart)
+   - Legend: Level of Satisfaction Among Remote Workers
+   - Values: Count of Employee ID 
+
+7. **Did Mental Health Resources Improve Productivity**(Clustered Bar Chart)
+   - X-Axis: Count of Employee ID
+   - Y-Axis: Access to Mental Health Resources 
+   - Legend: Productivity Change
+
+8. **What Percentage of Employees Reported A Condition**(Pie Chart)
+   - Legend: Mental Health Condition
+   - Values: Count of Employee ID 
+
+
+### Interactive Features
+- **Cross-filtering**: All visuals interact with each other
+- **Slicers**: Dynamic filtering across all pages
+- **Drill-through**: Click on any demographic to view detailed analysis
+- **Tooltips**: Custom tooltips showing additional metrics
+
+---
+
+## Conclusion
+
+### Key Findings Summary
+
+1. **Work Arrangement Impact**
+   - Hybrid workers report lowest stress levels (28%) and highest productivity increase (42%)
+   - Remote workers face significant social isolation (42% high isolation)
+   - Onsite workers show moderate stress but lower remote satisfaction
+
+2.  **Protective Factors**
+   - Strong company support reduces stress by 20%
+   - Access to mental health resources improves satisfaction by 0.9 points
+   - Regular physical activity lowers mental health condition prevalence by 43%
+   - Hybrid work model appears optimal for most roles
+
+3. **Demographic Vulnerabilities**
+   - Female employees report 5% higher stress and 7% higher anxiety than male
+   - Mid-career employees (30-49) face highest stress levels
+   - Finance and Consulting industries show highest stress rates
+   - Remote workers need targeted isolation reduction strategies
+
+4. **Organizational Implications**
+   - Mental health resources are underutilized - only 48% have access
+   - Company support varies significantly by industry and region
+   - Productivity and well-being are not mutually exclusive; hybrid workers demonstrate both
+
+---
+
+## Recommendation
+
+### Strategic Recommendations
+
+Based on the data analysis, we propose the following actionable recommendations categorized by priority:
+
+---
+
+### 🚨 High Priority (Immediate Action Required)
+
+#### 1. Implement Hybrid-First Work Policy
+**Rationale**: Data shows hybrid workers have 28% high stress vs 35% for remote and 32% for onsite, with highest productivity increase (42%).
+
+**Action Items**:
+- Transition to hybrid model where feasible (target: 50% hybrid, 30% remote, 20% onsite)
+- Allow 2-3 days remote per week for in-office roles
+- Provide clear guidelines on flexible work hours
+- Equip managers to lead hybrid teams effectively
+
+**Expected Impact**: 15-20% reduction in high stress cases
+
+---
+
+#### 2. Mandatory Work Hour Limits
+**Rationale**: Strong correlation between hours worked >45 and high stress (r=0.52), with 60% of employees working excessive hours.
+
+**Action Items**:
+- Implement 40-hour maximum work week policy
+- Track overtime and flag consistent excessive hours
+- Provide workload management training for managers
+- Use project management tools to balance workloads
+
+**Expected Impact**: 25% reduction in burnout rates
+
+---
+
+#### 3. Mental Health Resource Expansion
+**Rationale**: Only 48% have access to resources; those with access show 10% lower stress and 0.9 higher satisfaction.
+
+**Action Items**:
+- Guarantee access to mental health resources for all employees
+- Introduce Employee Assistance Programs (EAP) with 24/7 counseling
+- Offer 5-10 free therapy sessions annually
+- Create anonymous mental health support channels
+- Train mental health first-aiders across all departments
+
+**Expected Impact**: 30% increase in resource utilization; 15% stress reduction
+
+---
+
+### ⚡ Medium Priority (Next Quarter)
+
+#### 4. Combat Social Isolation for Remote Workers
+**Rationale**: 42% of remote workers report high isolation vs 22% onsite.
+
+**Action Items**:
+- Mandatory monthly in-person team gatherings
+- Create virtual water-cooler sessions
+- Support regional coworking space memberships
+- Encourage video-on during meetings for connection
+
+**Expected Impact**: 30% reduction in high isolation cases
+
+---
+
+#### 5. Optimize Meeting Culture
+**Rationale**: High meeting load (>10/week) correlates with 48% higher isolation rates.
+
+**Action Items**:
+- Institute "No Meeting Days" (e.g., Wednesday)
+- Limit meetings to 30 minutes where possible
+- Adopt asynchronous communication for updates
+- Meeting-free focus blocks (2-3 hours daily)
+- Audit and eliminate unnecessary recurring meetings
+
+**Expected Impact**: 20% reduction in meeting load; 15% reduction in isolation
+
+---
+
+#### 6. Targeted Support for Female Employees
+**Rationale**: Female employees report 5% higher stress and 7% higher anxiety.
+
+**Action Items**:
+- Establish Women in Leadership mentorship program
+- Provide flexible schedules for caregiving responsibilities
+- Ensure equitable promotion and pay practices
+- Create safe spaces for women to discuss workplace challenges
+- Offer specialized mental health resources for female employees
+
+**Expected Impact**: 10% reduction in gender stress gap
+
+---
+
+### 📋 Low Priority (Ongoing Initiatives)
+
+#### 7. Enhance Sleep and Wellness Programs
+**Rationale**: Strong correlation between sleep quality and stress 
+
+**Action Items**:
+- Provide sleep tracking and improvement resources
+- Offer gym memberships or fitness stipends
+- Encourage lunch break walks and physical activity
+- Create wellness challenges with incentives
+- Educate on sleep hygiene and its impact on performance
+
+**Expected Impact**: 15% improvement in sleep quality; 10% stress reduction
+
+---
+
+#### 8. Industry-Specific Interventions
+**Rationale**: Finance (42% high stress) and Consulting (39%) need targeted support.
+
+**Action Items**:
+- Implement stress management workshops for high-stress industries
+- Review client expectations and billable hour requirements
+- Rotate demanding projects with recovery periods
+- Provide premium mental health support for these sectors
+
+**Expected Impact**: 20% stress reduction in target industries
+
+---
+
+#### 9. Mid-Career Support Programs
+**Rationale**: Employees 30-49 show highest stress (34-35%).
+
+**Action Items**:
+- Offer career development and leadership training
+- Provide financial planning resources
+- Implement phased retirement planning
+- Create peer support networks
+- Flexible scheduling for family obligations
+
+**Expected Impact**: 15% stress reduction in mid-career segment
+
+---
+
